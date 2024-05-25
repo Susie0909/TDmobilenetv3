@@ -57,7 +57,7 @@ def get_args_parser():
                         help='Name of model to train')
     parser.add_argument('--drop_path', type=float, default=0, metavar='PCT',
                         help='Drop path rate (default: 0.0)')
-    parser.add_argument('--input_size', default=224, type=int,
+    parser.add_argument('--input_size', default=800, type=int,
                         help='image input size')
     parser.add_argument('--layer_scale_init_value', default=1e-6, type=float,
                         help="Layer scale initial values")
@@ -90,7 +90,7 @@ def get_args_parser():
     parser.add_argument('--layer_decay', type=float, default=1.0)
     parser.add_argument('--min_lr', type=float, default=1e-6, metavar='LR',
                         help='lower lr bound for cyclic schedulers that hit 0 (1e-6)')
-    parser.add_argument('--warmup_epochs', type=int, default=20, metavar='N',
+    parser.add_argument('--warmup_epochs', type=int, default=8, metavar='N',
                         help='epochs to warmup LR, if scheduler supports')
     parser.add_argument('--warmup_steps', type=int, default=-1, metavar='N',
                         help='num of steps to warmup LR, will overload warmup_epochs if set > 0')
@@ -143,17 +143,17 @@ def get_args_parser():
 
     # Dataset parameters
     parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
-                        help='dataset path')
+                        help='dataset path') # 训练集路径
     parser.add_argument('--eval_data_path', default=None, type=str,
                         help='dataset path for evaluation')
     parser.add_argument('--nb_classes', default=1000, type=int,
                         help='number of the classification types')
-    parser.add_argument('--imagenet_default_mean_and_std', type=str2bool, default=True)
+    parser.add_argument('--imagenet_default_mean_and_std', type=str2bool, default=True) # 可以优化！
     parser.add_argument('--data_set', default='IMNET', choices=['CIFAR', 'IMNET', 'IMNET_LMDB', 'image_folder'],
                         type=str, help='ImageNet dataset path')
-    parser.add_argument('--output_dir', default='',
+    parser.add_argument('--output_dir', default='./output_dir_save',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default=None,
+    parser.add_argument('--log_dir', default='./tensorboard',
                         help='path where to tensorboard log')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -242,7 +242,7 @@ def main(args):
         wandb_logger = None
 
     data_loader_train = torch.utils.data.DataLoader(
-        dataset_train, sampler=sampler_train,
+        dataset_train, shuffle=True,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=args.pin_mem,
@@ -251,8 +251,8 @@ def main(args):
 
     if dataset_val is not None:
         data_loader_val = torch.utils.data.DataLoader(
-            dataset_val, sampler=sampler_val,
-            batch_size=125,
+            dataset_val,shuffle=True,
+            batch_size=args.batch_size,
             num_workers=args.num_workers,
             pin_memory=args.pin_mem,
             drop_last=False
@@ -270,17 +270,16 @@ def main(args):
             label_smoothing=args.smoothing, num_classes=args.nb_classes)
 
     if args.model == "mobilenet_v3_small":
-        model = MobileNetV3_Small()
+        model = MobileNetV3_Small(num_classes=args.nb_classes)
     elif args.model == "mobilenet_v3_large":
         model = MobileNetV3_Large()
-
+    breakpoint()
     if args.finetune:
         if args.finetune.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
                 args.finetune, map_location='cpu', check_hash=True)
         else:
             checkpoint = torch.load(args.finetune, map_location='cpu')
-
         print("Load ckpt from %s" % args.finetune)
         checkpoint_model = None
         for model_key in args.model_key.split('|'):

@@ -41,3 +41,22 @@ Some details may be different from the original paper, welcome to discuss and he
 | Large (torchvision)   | 235  M    | 5.5 M      | 74.0%     |
 | Large (our 300 epoch) | 241  M    | 5.2 M      | 75.6%     |
 | Large (our 450 epoch) | 241  M    | 5.2 M      | 75.9%     |
+
+
+## Usage
+
+### Data prepare
+
+```
+            directory/
+            ├── class_x
+            │   ├── xxx.ext
+            │   ├── xxy.ext
+            │   └── ...
+            │       └── xxz.ext
+            └── class_y
+                ├── 123.ext
+                ├── nsdf3.ext
+                └── ...
+                └── asd932_.ext
+```

@@ -76,7 +76,7 @@ def build_dataset(is_train, args):
         path = os.path.join(args.data_path, 'train.lmdb' if is_train else 'val.lmdb')
         dataset = ImageFolderLMDB(path, transform=transform)
         nb_classes = 1000
-    elif args.data_set == "image_folder":
+    elif args.data_set == "image_folder": # 本模型所用类
         root = args.data_path if is_train else args.eval_data_path
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = args.nb_classes
@@ -91,8 +91,10 @@ def build_dataset(is_train, args):
 def build_transform(is_train, args):
     resize_im = args.input_size > 32
     imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
-    mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
-    std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+    # mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+    # std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+    mean = [0.5]
+    std = [0.5]
 
     if is_train:
         # this should always dispatch to transforms_imagenet_train

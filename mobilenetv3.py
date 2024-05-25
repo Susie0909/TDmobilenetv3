@@ -95,7 +95,7 @@ class Block(nn.Module):
 class MobileNetV3_Small(nn.Module):
     def __init__(self, num_classes=1000, act=nn.Hardswish):
         super(MobileNetV3_Small, self).__init__()
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=2, padding=1, bias=False)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1, bias=False)# 单通道输入
         self.bn1 = nn.BatchNorm2d(16)
         self.hs1 = act(inplace=True)
 
